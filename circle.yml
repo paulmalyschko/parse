@@ -1,0 +1,11 @@
+machine:
+  python:
+    version: 2.7.6
+
+dependencies:
+  override:
+    - ./install-appengine.sh
+
+test:
+  pre:
+    - google-appengine/dev_appserver.py --skip_sdk_update_check True app
