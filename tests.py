@@ -14,9 +14,6 @@ except ImportError:
     pass
 
 class ParseAppEngineTestCase(unittest.TestCase):
-    def tear_down(self):
-        pass
-
     def test_appengine_running(self):
         """Test if AppEngine is running"""
         
