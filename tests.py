@@ -1,9 +1,19 @@
 import unittest
+app = None
+
+# try to run a webapp2 instance
+try:
+    from webapp2 import RequestHandler, WSGIApplication
+
+    class Handler(RequestHandler):
+        def get(self):
+            self.response.out.write('')
+
+    app = WSGIApplication([('/', Handler)], debug=True)
+except ImportError:
+    pass
 
 class ParseAppEngineTestCase(unittest.TestCase):
-    def set_up(self):
-        pass
-
     def tear_down(self):
         pass
 
@@ -17,7 +27,7 @@ class ParseAppEngineTestCase(unittest.TestCase):
             error = e
 
         msg = "Google AppEngine devserver is not running or undetectable"
-        self.assert_equal(error, None, msg)
+        self.assertEqual(error, None, msg)
 
 if __name__ == '__main__':
     unittest.main()

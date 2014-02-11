@@ -8,4 +8,4 @@ dependencies:
 
 test:
   pre:
-    - google_appengine/dev_appserver.py --skip_sdk_update_check True app
+    - google_appengine/dev_appserver.py --skip_sdk_update_check True ./
