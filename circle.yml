@@ -10,4 +10,4 @@ dependencies:
 test:
   override:
     - nosetests tests.py
-    - nosetests --with-gae --gae-lib-root ./ tests_appengine.py
+    - nosetests --with-gae --gae-lib-root google_appengine tests_appengine.py
