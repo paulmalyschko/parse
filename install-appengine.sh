@@ -31,7 +31,7 @@ if wget "$DL_URL"; then
   fi
  
   rm -rf google_appengine
-  if unzip "$DL_FILE" -d /usr/local; then
+  if unzip "$DL_FILE"; then
     rm "$DL_FILE"
   fi
 fi
