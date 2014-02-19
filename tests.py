@@ -1,6 +1,13 @@
 import os
+import sys
+import time
 import unittest
 import parse
+
+
+def wait(var, value, timeout=30):
+    while True:
+
 
 
 class ParseTestCase(unittest.TestCase):
@@ -22,6 +29,18 @@ class ParseTestCase(unittest.TestCase):
     def test_save_object(self):
         obj = parse.Object('TestObject')
         obj.save()
+        self.assertIsNotNone(obj.object_id)
+        self.assertIsNotNone(obj.created_at)
+
+        saved = False
+        def callback(result, error):
+            if not error:
+                saved = True
+        
+        obj = parse.Object('TestObject')
+        obj.save_in_background(callback=callback).wait()
+        wait(saved, True)
+
         self.assertIsNotNone(obj.object_id)
         self.assertIsNotNone(obj.created_at)
 
