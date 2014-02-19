@@ -655,7 +655,7 @@ class Query(object):
 
     @skip.setter
     def skip(self, skip):
-        if not isinstance(value, Number):
+        if not isinstance(skip, Number):
             raise TypeError("Limit requires a number")
         self._skip = max(0, skip)
         if self._skip != QUERY_DEFAULT_SKIP:
