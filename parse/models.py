@@ -628,8 +628,8 @@ class Query(object):
         self._class_name = class_name
         self.ignore_acl = False
         self.data = {}
-        self._limit = QUERY_LIMIT_DEFAULT
-        self._skip = QUERY_SKIP_DEFAULT
+        self._limit = QUERY_DEFAULT_LIMIT
+        self._skip = QUERY_DEFAULT_SKIP
 
     @property
     def class_name(self):
