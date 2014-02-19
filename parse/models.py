@@ -203,12 +203,12 @@ class Object(dict):
         ignore_acl = kwargs.pop('ignore_acl', False)
         callback = kwargs.pop('callback', None)
 
-        is_saved = self.object_id is not None
+        saved = self.object_id is not None
         save_items = {k: self[k] for k in self.dirty_keys if k in self}
         del_items = {k: None for k in self.dirty_keys if k not in self}
         items = dict(save_items.items() + del_items.items())
 
-        url = self.build_url(is_saved)
+        url = self.build_url(saved)
         method = 'POST' if not saved else 'PUT'
         headers = build_headers(master_key=ignore_acl)
         data = json.dump(items)
