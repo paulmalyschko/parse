@@ -482,7 +482,7 @@ class Object(dict):
 
     @staticmethod
     def delete_all(objs, **kwargs):
-        url, kwargs = Object.build_batch_delete_args(**kwargs)
+        url, kwargs = Object.build_batch_delete_args(objs=objs, **kwargs)
         return Object.handle_batch_delete_result(post(url, **kwargs),
             objs=objs)
     
