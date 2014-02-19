@@ -14,10 +14,10 @@ class JSONDecoder(json.JSONDecoder):
     def object_hook(self, obj):
         keys = ('objectId', 'createdAt', 'updatedAt')
 
-        if self.class_name is None:
-            self.class_name = obj['className']
-
         if all(key in obj for key in keys):
+            if self.class_name is None:
+                self.class_name = obj['className']
+            
             if self.class_name != CLASS_TYPE_USER:
                 return models.Object(self.class_name, **obj)
             else:
