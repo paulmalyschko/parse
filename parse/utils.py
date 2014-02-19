@@ -19,7 +19,7 @@ def build_headers(master_key=False, session_token=None,
     headers['X-Parse-REST-API-Key'] = constants.REST_API_KEY
     
     if master_key:
-        add_master_key_header(headers)
+        headers['X-Parse-Master-Key'] = constants.MASTER_KEY
     
     if session_token is not None:
         headers['X-Parse-Session-Token'] = session_token
