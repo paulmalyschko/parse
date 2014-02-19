@@ -641,7 +641,7 @@ class Query(object):
 
     @limit.setter
     def limit(self, limit):
-        if not isinstance(value, Number):
+        if not isinstance(limit, Number):
             raise TypeError("Limit requires a number")
         self._limit = max(0, min(limit, QUERY_MAX_LIMIT))
         if self._limit != QUERY_DEFAULT_LIMIT:
