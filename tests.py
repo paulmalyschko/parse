@@ -36,7 +36,7 @@ class ParseObjectTestCase(unittest.TestCase):
     def tearDown(self):
         delete_all_objects('TestObject')
 
-    def test_save_object(self):
+    def test_save(self):
         obj = parse.Object('TestObject')
         obj.save()
         self.assertIsNotNone(obj.object_id)
@@ -50,6 +50,33 @@ class ParseObjectTestCase(unittest.TestCase):
         obj.save_in_background(callback=callback).wait()
 
         wait(r)
+        self.assertIsNotNone(obj.object_id)
+        self.assertIsNotNone(obj.created_at)
+
+    def test_refresh(self):
+        obj = parse.Object('TestObject')
+        obj.save()
+        object_id = obj.object_id
+
+        obj = parse.Object('TestObject', object_id)
+        obj.refresh()
+
+        self.assertIsNotNone(obj.object_id)
+        self.assertIsNotNone(obj.created_at)
+
+    def test_refresh_in_background(self):
+        obj = parse.Object('TestObject')
+        obj.save()
+        object_id = obj.object_id
+
+        r = {'result': None}
+        def callback(result, error):
+            r['result'] = result if not error else error
+
+        obj = parse.Object('TestObject', object_id)
+        obj.refresh_in_background(callback=callback).wait()
+        wait(r)
+
         self.assertIsNotNone(obj.object_id)
         self.assertIsNotNone(obj.created_at)
 
