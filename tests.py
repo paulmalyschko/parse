@@ -41,6 +41,7 @@ class ParseTestCase(unittest.TestCase):
 
         r = {'result': None}
         def callback(result, error):
+            print ">>> test_save_object callback called"
             r['result'] = result if not error else False
         
         obj = parse.Object('TestObject')
