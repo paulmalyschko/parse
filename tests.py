@@ -8,6 +8,15 @@ import parse
 class ParseTestTimeout(Exception):
     pass
 
+def delete_all_objects(class_name):
+    while True:
+        q = parse.Query(class_name)
+        q.limit = 50
+        r = q.find()
+        if not r:
+            break
+        parse.Object.delete_all(r, ignore_acl=True)
+
 def wait(r, timeout=30):
     end_time = time.time() + timeout
     while True:
@@ -25,13 +34,7 @@ class ParseTestCase(unittest.TestCase):
         parse.set_application('test-parse', app_id, rest_api_key, master_key)
 
     def tearDown(self):
-        while True:
-            q = parse.Query('TestObject')
-            q.limit = 50
-            r = q.find()
-            if not r:
-                break
-            parse.Object.delete_all(r, ignore_acl=True)
+        delete_all_objects('TestObject')
 
     def test_save_object(self):
         obj = parse.Object('TestObject')
