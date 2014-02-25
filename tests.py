@@ -9,7 +9,6 @@ class ParseTestTimeout(Exception):
     pass
 
 def wait(r, timeout=30):
-    print ">>> wait..."
     end_time = time.time() + timeout
     while True:
         time.sleep(1)
@@ -20,14 +19,12 @@ def wait(r, timeout=30):
 
 class ParseTestCase(unittest.TestCase):
     def setUp(self):
-        print ">>> set up"
         app_id = os.environ['APPLICATION_ID']
         rest_api_key = os.environ['REST_API_KEY']
         master_key = os.environ['MASTER_KEY']
         parse.set_application('test-parse', app_id, rest_api_key, master_key)
 
     def tearDown(self):
-        print ">>> tear down"
         while True:
             q = parse.Query('TestObject')
             q.limit = 50
@@ -37,7 +34,6 @@ class ParseTestCase(unittest.TestCase):
             parse.Object.delete_all(r, ignore_acl=True)
 
     def test_save_object(self):
-        print ">>> test_save_object"
         obj = parse.Object('TestObject')
         obj.save()
         self.assertIsNotNone(obj.object_id)
@@ -45,7 +41,6 @@ class ParseTestCase(unittest.TestCase):
 
         r = {'result': None}
         def callback(result, error):
-            print ">>> test_save_object callback called"
             r['result'] = result if not error else False
         
         obj = parse.Object('TestObject')
