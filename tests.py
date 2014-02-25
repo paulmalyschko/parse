@@ -44,7 +44,7 @@ class ParseTestCase(unittest.TestCase):
             value = result if not error else False
         
         obj = parse.Object('TestObject')
-        obj.save_in_background(callback=callback, finished=saved)
+        obj.save_in_background(callback=callback)
 
         wait(r, True)
         self.assertIsNotNone(obj.object_id)
