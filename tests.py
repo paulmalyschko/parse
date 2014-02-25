@@ -49,7 +49,7 @@ class ParseTestCase(unittest.TestCase):
             r['result'] = result if not error else False
         
         obj = parse.Object('TestObject')
-        obj.save_in_background(callback=callback)
+        obj.save_in_background(callback=callback).wait()
 
         wait(r)
         self.assertIsNotNone(obj.object_id)
