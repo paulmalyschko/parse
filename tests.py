@@ -39,17 +39,19 @@ class ParseObjectTestCase(unittest.TestCase):
     def test_save(self):
         obj = parse.Object('TestObject')
         obj.save()
+
         self.assertIsNotNone(obj.object_id)
         self.assertIsNotNone(obj.created_at)
 
+    def test_save_in_background(self):
         r = {'result': None}
         def callback(result, error):
             r['result'] = result if not error else False
         
         obj = parse.Object('TestObject')
         obj.save_in_background(callback=callback).wait()
-
         wait(r)
+        
         self.assertIsNotNone(obj.object_id)
         self.assertIsNotNone(obj.created_at)
 
