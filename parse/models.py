@@ -230,7 +230,7 @@ class Object(dict):
     
     def handle_refresh_result(self, response, **kwargs):
         self.clean()
-        super(Object, self).update(json.load(response.text))
+        super(Object, self).update(json.load(response.text, self.class_name))
         return self
     
     def build_refresh_args(self, **kwargs):
