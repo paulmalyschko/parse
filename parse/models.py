@@ -270,7 +270,7 @@ class Object(dict):
         ignore_acl = kwargs.pop('ignore_acl', False)
         callback = kwargs.pop('callback', None)
 
-        url = build_url(True)
+        url = self.build_url(True)
         headers = build_headers(master_key=ignore_acl)
 
         if callback is not None:
