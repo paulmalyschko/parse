@@ -5,9 +5,9 @@ machine:
 dependencies:
   override:
     - pip install -r requirements.txt
-    - ./install-appengine.sh
+    # - ./install-appengine.sh
 
 test:
   override:
     - nosetests tests.py
-    - nosetests --with-gae --gae-lib-root google_appengine tests_appengine.py
+    # - nosetests --with-gae --gae-lib-root google_appengine tests_appengine.py
