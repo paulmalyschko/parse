@@ -51,7 +51,7 @@ class ParseObjectTestCase(unittest.TestCase):
         obj = parse.Object('TestObject')
         obj.save_in_background(callback=callback).wait()
         wait(r)
-        
+
         self.assertIsNotNone(obj.object_id)
         self.assertIsNotNone(obj.created_at)
 
@@ -81,6 +81,30 @@ class ParseObjectTestCase(unittest.TestCase):
 
         self.assertIsNotNone(obj.object_id)
         self.assertIsNotNone(obj.created_at)
+
+    def test_delete(self):
+        obj = parse.Object('TestObject')
+        obj.save()
+        object_id = obj.object_id
+
+        obj.delete()
+        obj = parse.Object('TestObject', object_id)
+        self.assertRaises(parse.ParseException, obj.refresh())
+
+    def test_delete_in_background(self):
+        obj = parse.Object('TestObject')
+        obj.save()
+        object_id = obj.object_id
+
+        r = {'result': None}
+        def callback(result, error):
+            r['result'] = result if not error else False
+
+        obj.delete_in_background(callback=callback).wait()
+        wait(r)
+
+        obj = parse.Object('TestObject', object_id)
+        self.assertRaises(parse.ParseException, obj.refresh())
 
 
 if __name__ == '__main__':
