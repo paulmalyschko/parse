@@ -26,7 +26,7 @@ def wait(r, timeout=30):
         if r['result'] is not None:
             break
 
-class ParseTestCase(unittest.TestCase):
+class ParseObjectTestCase(unittest.TestCase):
     def setUp(self):
         app_id = os.environ['APPLICATION_ID']
         rest_api_key = os.environ['REST_API_KEY']
