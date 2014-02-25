@@ -263,7 +263,8 @@ class Object(dict):
     def handle_delete_result(self, response, **kwargs):
         self.clean()
         for key in ('objectId', 'createdAt', 'updatedAt'):
-            super(Object, self).__delitem__(key)
+            if key in self:
+                super(Object, self).__delitem__(key)
         return True
     
     def build_delete_args(self, **kwargs):
