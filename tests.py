@@ -8,13 +8,13 @@ import parse
 class ParseTestTimeout(Exception):
     pass
 
-def wait(r, value, timeout=30):
+def wait(r, timeout=30):
     end_time = time.time() + timeout
     while True:
         time.sleep(1)
         if time.time() >= end_time:
             raise ParseTestTimeout("Wait for value change timed out")
-        if r['result'] == value:
+        if r['result'] is not None:
             break
 
 class ParseTestCase(unittest.TestCase):
@@ -39,14 +39,14 @@ class ParseTestCase(unittest.TestCase):
         self.assertIsNotNone(obj.object_id)
         self.assertIsNotNone(obj.created_at)
 
-        r = {'result': False}
+        r = {'result': None}
         def callback(result, error):
-            value = result if not error else False
+            r['result'] = result if not error else False
         
         obj = parse.Object('TestObject')
         obj.save_in_background(callback=callback)
 
-        wait(r, True)
+        wait(r)
         self.assertIsNotNone(obj.object_id)
         self.assertIsNotNone(obj.created_at)
 
