@@ -5,6 +5,8 @@ import unittest
 import parse
 
 
+TEST_CLASS_NAME = 'TestObject'
+
 class ParseTestTimeout(Exception):
     pass
 
@@ -16,6 +18,11 @@ def delete_all_objects(class_name):
         if not r:
             break
         parse.Object.delete_all(r, ignore_acl=True)
+
+def save_object(class_name):
+    obj = parse.Object(class_name)
+    obj.save()
+    return obj
 
 def wait(r, timeout=30):
     end_time = time.time() + timeout
@@ -34,12 +41,10 @@ class ParseObjectTestCase(unittest.TestCase):
         parse.set_application('test-parse', app_id, rest_api_key, master_key)
 
     def tearDown(self):
-        delete_all_objects('TestObject')
+        delete_all_objects(TEST_CLASS_NAME)
 
     def test_save(self):
-        obj = parse.Object('TestObject')
-        obj.save()
-
+        obj = save_object(TEST_CLASS_NAME)
         self.assertIsNotNone(obj.object_id)
         self.assertIsNotNone(obj.created_at)
 
@@ -48,7 +53,7 @@ class ParseObjectTestCase(unittest.TestCase):
         def callback(result, error):
             r['result'] = result if not error else False
         
-        obj = parse.Object('TestObject')
+        obj = parse.Object(TEST_CLASS_NAME)
         obj.save_in_background(callback=callback).wait()
         wait(r)
 
@@ -56,26 +61,21 @@ class ParseObjectTestCase(unittest.TestCase):
         self.assertIsNotNone(obj.created_at)
 
     def test_refresh(self):
-        obj = parse.Object('TestObject')
-        obj.save()
-        object_id = obj.object_id
-
-        obj = parse.Object('TestObject', object_id)
+        object_id = save_object(TEST_CLASS_NAME).object_id
+        obj = parse.Object(TEST_CLASS_NAME, object_id)
         obj.refresh()
 
         self.assertIsNotNone(obj.object_id)
         self.assertIsNotNone(obj.created_at)
 
     def test_refresh_in_background(self):
-        obj = parse.Object('TestObject')
-        obj.save()
-        object_id = obj.object_id
+        object_id = save_object(TEST_CLASS_NAME).object_id
 
         r = {'result': None}
         def callback(result, error):
             r['result'] = result if not error else error
 
-        obj = parse.Object('TestObject', object_id)
+        obj = parse.Object(TEST_CLASS_NAME, object_id)
         obj.refresh_in_background(callback=callback).wait()
         wait(r)
 
@@ -83,19 +83,16 @@ class ParseObjectTestCase(unittest.TestCase):
         self.assertIsNotNone(obj.created_at)
 
     def test_delete(self):
-        obj = parse.Object('TestObject')
-        obj.save()
+        obj = save_object(TEST_CLASS_NAME)
         object_id = obj.object_id
-
         obj.delete()
 
-        obj = parse.Object('TestObject', object_id)
+        obj = parse.Object(TEST_CLASS_NAME, object_id)
         with self.assertRaises(parse.ParseException):
             obj.refresh()
 
     def test_delete_in_background(self):
-        obj = parse.Object('TestObject')
-        obj.save()
+        obj = save_object(TEST_CLASS_NAME)
         object_id = obj.object_id
 
         r = {'result': None}
@@ -105,7 +102,7 @@ class ParseObjectTestCase(unittest.TestCase):
         obj.delete_in_background(callback=callback).wait()
         wait(r)
 
-        obj = parse.Object('TestObject', object_id)
+        obj = parse.Object(TEST_CLASS_NAME, object_id)
         with self.assertRaises(parse.ParseException):
             obj.refresh()
 
