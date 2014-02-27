@@ -88,8 +88,10 @@ class ParseObjectTestCase(unittest.TestCase):
         object_id = obj.object_id
 
         obj.delete()
+
         obj = parse.Object('TestObject', object_id)
-        self.assertRaises(parse.ParseException, obj.refresh())
+        with self.assertRaises(parse.ParseException):
+            obj.refresh()
 
     def test_delete_in_background(self):
         obj = parse.Object('TestObject')
@@ -104,7 +106,8 @@ class ParseObjectTestCase(unittest.TestCase):
         wait(r)
 
         obj = parse.Object('TestObject', object_id)
-        self.assertRaises(parse.ParseException, obj.refresh())
+        with self.assertRaises(parse.ParseException):
+            obj.refresh()
 
 
 if __name__ == '__main__':
