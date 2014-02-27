@@ -106,6 +106,23 @@ class ParseObjectTestCase(unittest.TestCase):
         with self.assertRaises(parse.ParseException):
             obj.refresh()
 
+    def test_increment(self):
+        obj = parse.Object(TEST_CLASS_NAME)
+        obj['counter'] = 0
+        obj.save()
+        object_id = obj.object_id
+
+        increments = [1, 3, -5]
+        values = [1, 4, -1]
+
+        for i, v in zip(increments, values):
+            obj.increment('counter', value=i)
+            self.assertEqual(obj['counter'], c)
+
+            obj = parse.Object(TEST_CLASS_NAME, object_id)
+            obj.refresh()
+            self.assertEqual(obj['counter'], c)
+
 
 if __name__ == '__main__':
     unittest.main()
