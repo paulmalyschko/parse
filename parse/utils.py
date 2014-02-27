@@ -59,7 +59,7 @@ def request(method, url, **kwargs):
         try:
             r = requests.request(method, url, data=data, headers=headers,
                 timeout=timeout, verify=verify, cookies=cookies)
-        except requests.HTTPError as e:
+        except (requests.HTTPError, requests.RequestException) as e:
             raise generate_exception(e)
     
     return r
