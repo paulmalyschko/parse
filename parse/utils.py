@@ -34,8 +34,10 @@ def generate_exception(error):
         e.code = r['code']
     except KeyError:
         # no code == authentication error
+        e = ParseException()
+        e.reason = "Unauthorized"
         e.code = None
-    except (TypeError, ValueError):
+    except (AttributeError, TypeError, ValueError):
         # invalid JSON
         e = requests.HTTPError()
         e.reason = str(error)
