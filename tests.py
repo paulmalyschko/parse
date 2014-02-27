@@ -117,11 +117,11 @@ class ParseObjectTestCase(unittest.TestCase):
 
         for i, v in zip(increments, values):
             obj.increment('counter', value=i)
-            self.assertEqual(obj['counter'], c)
+            self.assertEqual(obj['counter'], v)
 
             obj = parse.Object(TEST_CLASS_NAME, object_id)
             obj.refresh()
-            self.assertEqual(obj['counter'], c)
+            self.assertEqual(obj['counter'], v)
 
 
 if __name__ == '__main__':
