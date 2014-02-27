@@ -37,7 +37,12 @@ def generate_exception(error):
         e = ParseException()
         e.reason = "Unauthorized"
         e.code = None
-    except (AttributeError, TypeError, ValueError):
+    except AttributeError:
+        # RequestException
+        e = ParseException()
+        e.reason = str(error)
+        e.code = None
+    except (TypeError, ValueError):
         # invalid JSON
         e = requests.HTTPError()
         e.reason = str(error)
