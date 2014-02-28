@@ -294,6 +294,7 @@ class Object(dict):
         headers = build_headers(master_key=ignore_acl)
         data = json.dump({key: {'__op': 'Increment', 'amount': amt}})
         put(url, headers=headers, data=data)
+        self[key] += amt
     
     def add_objects_to_array(self, key, objs, **kwargs):
         ignore_acl = kwargs.pop('ignore_acl', False)
