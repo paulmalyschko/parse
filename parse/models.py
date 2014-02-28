@@ -288,13 +288,13 @@ class Object(dict):
         url, kwargs = self.build_delete_args(**kwargs)
         return delete(url, **kwargs)
 
-    def increment(self, key, amt=1, **kwargs):
+    def increment(self, key, amount=1, **kwargs):
         ignore_acl = kwargs.pop('ignore_acl', False)
         url = self.build_url(True)
         headers = build_headers(master_key=ignore_acl)
-        data = json.dump({key: {'__op': 'Increment', 'amount': amt}})
+        data = json.dump({key: {'__op': 'Increment', 'amount': amount}})
         put(url, headers=headers, data=data)
-        self[key] += amt
+        self[key] += amount
     
     def add_objects_to_array(self, key, objs, **kwargs):
         ignore_acl = kwargs.pop('ignore_acl', False)
