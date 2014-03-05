@@ -10,7 +10,7 @@ TEST_CLASS_NAME = 'TestObject'
 class ParseTestTimeout(Exception):
     pass
 
-def delete_all_objects(class_name):
+def delete_all_objects(class_name=TEST_CLASS_NAME):
     while True:
         q = parse.Query(class_name)
         q.limit = 50
@@ -19,8 +19,10 @@ def delete_all_objects(class_name):
             break
         parse.Object.delete_all(r, ignore_acl=True)
 
-def save_object(class_name):
+def save_object(class_name=TEST_CLASS_NAME, key=None, value=None):
     obj = parse.Object(class_name)
+    if key is not None and value is not None:
+        obj[key] = value
     obj.save()
     return obj
 
@@ -44,7 +46,7 @@ class ParseObjectTestCase(unittest.TestCase):
         delete_all_objects(TEST_CLASS_NAME)
 
     def test_save(self):
-        obj = save_object(TEST_CLASS_NAME)
+        obj = save_object()
         self.assertIsNotNone(obj.object_id)
         self.assertIsNotNone(obj.created_at)
 
@@ -61,7 +63,7 @@ class ParseObjectTestCase(unittest.TestCase):
         self.assertIsNotNone(obj.created_at)
 
     def test_refresh(self):
-        object_id = save_object(TEST_CLASS_NAME).object_id
+        object_id = save_object().object_id
         obj = parse.Object(TEST_CLASS_NAME, object_id)
         obj.refresh()
 
@@ -69,7 +71,7 @@ class ParseObjectTestCase(unittest.TestCase):
         self.assertIsNotNone(obj.created_at)
 
     def test_refresh_in_background(self):
-        object_id = save_object(TEST_CLASS_NAME).object_id
+        object_id = save_object().object_id
 
         r = {'result': None}
         def callback(result, error):
@@ -83,7 +85,7 @@ class ParseObjectTestCase(unittest.TestCase):
         self.assertIsNotNone(obj.created_at)
 
     def test_delete(self):
-        obj = save_object(TEST_CLASS_NAME)
+        obj = save_object()
         object_id = obj.object_id
         obj.delete()
 
@@ -92,7 +94,7 @@ class ParseObjectTestCase(unittest.TestCase):
             obj.refresh()
 
     def test_delete_in_background(self):
-        obj = save_object(TEST_CLASS_NAME)
+        obj = save_object()
         object_id = obj.object_id
 
         r = {'result': None}
@@ -107,9 +109,7 @@ class ParseObjectTestCase(unittest.TestCase):
             obj.refresh()
 
     def test_increment(self):
-        obj = parse.Object(TEST_CLASS_NAME)
-        obj['counter'] = 0
-        obj.save()
+        obj = save_object(key='counter', value=0)
         object_id = obj.object_id
 
         increments = [1, 3, -5]
@@ -122,6 +122,42 @@ class ParseObjectTestCase(unittest.TestCase):
             obj = parse.Object(TEST_CLASS_NAME, object_id)
             obj.refresh()
             self.assertEqual(obj['counter'], v)
+
+    def test_add_objects_to_array(self):
+        obj = save_object(key='array', value=[1, 'foo'])
+        object_id = obj.object_id
+
+        array = [1, 'foo', 2, 'foo', 'bar']
+        obj.add_objects_to_array('array', [2, 'foo', 'bar'])
+        self.assertEqual(obj['array'], array)
+
+        obj = parse.Object(TEST_CLASS_NAME, object_id)
+        obj.refresh()
+        self.assertEqual(obj['array'], array)
+
+    def test_add_unique_objects_to_array(self):
+        obj = save_object(key='array', value=[1, 'foo'])
+        object_id = obj.object_id
+
+        array = [1, 'foo', 2, 'bar']
+        obj.add_unique_objects_to_array('array', [2, 'foo', 'bar'])
+        self.assertEqual(obj['array'], array)
+
+        obj = parse.Object(TEST_CLASS_NAME, object_id)
+        obj.refresh()
+        self.assertEqual(obj['array'], array)
+
+    def remove_objects_from_array(self):
+        obj = save_object(key='array', value=[1, 'foo', 2, 'bar', 2, 'foo'])
+        object_id = obj.object_id
+
+        array = [1, 'bar']
+        obj.remove_objects_from_array('array', ['foo', 2])
+        self.assertEqual(obj)
+
+        obj = parse.Object(TEST_CLASS_NAME, object_id)
+        obj.refresh()
+        self.assertEqual(obj['array'], array)
 
 
 if __name__ == '__main__':
