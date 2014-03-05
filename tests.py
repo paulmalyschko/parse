@@ -129,11 +129,11 @@ class ParseObjectTestCase(unittest.TestCase):
 
         array = [1, 'foo', 2, 'foo', 'bar']
         obj.add_objects_to_array('array', [2, 'foo', 'bar'])
-        self.assertEqual(obj['array'], array)
+        self.assertItemsEqual(obj['array'], array)
 
         obj = parse.Object(TEST_CLASS_NAME, object_id)
         obj.refresh()
-        self.assertEqual(obj['array'], array)
+        self.assertItemsEqual(obj['array'], array)
 
     def test_add_unique_objects_to_array(self):
         obj = save_object(key='array', value=[1, 'foo'])
@@ -141,11 +141,11 @@ class ParseObjectTestCase(unittest.TestCase):
 
         array = [1, 'foo', 2, 'bar']
         obj.add_unique_objects_to_array('array', [2, 'foo', 'bar'])
-        self.assertEqual(obj['array'], array)
+        self.assertItemsEqual(obj['array'], array)
 
         obj = parse.Object(TEST_CLASS_NAME, object_id)
         obj.refresh()
-        self.assertEqual(obj['array'], array)
+        self.assertItemsEqual(obj['array'], array)
 
     def remove_objects_from_array(self):
         obj = save_object(key='array', value=[1, 'foo', 2, 'bar', 2, 'foo'])
@@ -153,11 +153,11 @@ class ParseObjectTestCase(unittest.TestCase):
 
         array = [1, 'bar']
         obj.remove_objects_from_array('array', ['foo', 2])
-        self.assertEqual(obj)
+        self.assertItemsEqual(obj)
 
         obj = parse.Object(TEST_CLASS_NAME, object_id)
         obj.refresh()
-        self.assertEqual(obj['array'], array)
+        self.assertItemsEqual(obj['array'], array)
 
 
 if __name__ == '__main__':
