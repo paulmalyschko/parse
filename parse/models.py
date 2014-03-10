@@ -320,8 +320,8 @@ class Object(dict):
         put(url, headers=headers, data=data)
         print objs
         print self[key]
-        for obj in objs:
-            self[key].remove(obj)
+
+        self[key] = [for obj in self[key] if obj not in objs]
 
         print objs
         print self[key]
