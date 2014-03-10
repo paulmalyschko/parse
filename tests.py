@@ -147,7 +147,7 @@ class ParseObjectTestCase(unittest.TestCase):
         obj.refresh()
         self.assertItemsEqual(obj['array'], array)
 
-    def remove_objects_from_array(self):
+    def test_remove_objects_from_array(self):
         obj = save_object(key='array', value=[1, 'foo', 2, 'bar', 2, 'foo'])
         object_id = obj.object_id
 
