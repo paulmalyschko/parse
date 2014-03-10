@@ -153,7 +153,7 @@ class ParseObjectTestCase(unittest.TestCase):
 
         array = [1, 'bar']
         obj.remove_objects_from_array('array', ['foo', 2])
-        self.assertItemsEqual(obj)
+        self.assertItemsEqual(obj['array'], array)
 
         obj = parse.Object(TEST_CLASS_NAME, object_id)
         obj.refresh()
