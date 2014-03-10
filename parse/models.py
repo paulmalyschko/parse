@@ -321,14 +321,8 @@ class Object(dict):
         headers = build_headers(master_key=ignore_acl)
         data = json.dump({key: {'__op': 'Remove', 'objects': objs}})
         put(url, headers=headers, data=data)
-        print objs
-        print self[key]
-
         self[key] = [obj for obj in self[key] if obj not in objs]
         self.clean(key=key)
-
-        print objs
-        print self[key]
     
     @staticmethod
     def build_batch_url():
