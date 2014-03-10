@@ -295,6 +295,7 @@ class Object(dict):
         data = json.dump({key: {'__op': 'Increment', 'amount': amount}})
         put(url, headers=headers, data=data)
         self[key] += amount
+        self.clean(key=key)
     
     def add_objects_to_array(self, key, objs, **kwargs):
         ignore_acl = kwargs.pop('ignore_acl', False)
@@ -303,6 +304,7 @@ class Object(dict):
         data = json.dump({key: {'__op': 'Add', 'objects': objs}})
         put(url, headers=headers, data=data)
         self[key] = self[key] + objs
+        self.clean(key=key)
     
     def add_unique_objects_to_array(self, key, objs, **kwargs):
         ignore_acl = kwargs.pop('ignore_acl', False)
@@ -311,6 +313,7 @@ class Object(dict):
         data = json.dump({key: {'__op': 'AddUnique', 'objects': objs}})
         put(url, headers=headers, data=data)
         self[key] = list({obj for obj in (self[key] + objs)})
+        self.clean(key=key)
                 
     def remove_objects_from_array(self, key, objs, **kwargs):
         ignore_acl = kwargs.pop('ignore_acl', False)
@@ -321,7 +324,8 @@ class Object(dict):
         print objs
         print self[key]
 
-        self[key] = [for obj in self[key] if obj not in objs]
+        self[key] = [obj for obj in self[key] if obj not in objs]
+        self.clean(key=key)
 
         print objs
         print self[key]
