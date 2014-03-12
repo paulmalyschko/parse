@@ -373,7 +373,7 @@ class Object(dict):
 
     @staticmethod
     def save_all(objs, **kwargs):
-        url, kwargs = Object.build_batch_save_args(**kwargs)
+        url, kwargs = Object.build_batch_save_args(objs=objs, **kwargs)
         return Object.handle_batch_save_result(post(url, **kwargs),
             objs=objs)
     
@@ -425,7 +425,7 @@ class Object(dict):
 
     @staticmethod
     def refresh_all(objs, **kwargs):
-        url, kwargs = Object.build_batch_refresh_args(**kwargs)
+        url, kwargs = Object.build_batch_refresh_args(objs=objs, **kwargs)
         return Object.handle_batch_refresh_result(post(url, **kwargs),
             objs=objs)
     
