@@ -71,7 +71,7 @@ class ParseObjectTestCase(unittest.TestCase):
         object_id = save_object().object_id
         obj = parse.Object(TEST_CLASS_NAME, object_id)
         obj.refresh()
-        assert_is_object(obj)
+        assert_is_object(self, obj)
 
     def test_refresh_in_background(self):
         object_id = save_object().object_id
