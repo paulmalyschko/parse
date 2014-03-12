@@ -19,12 +19,20 @@ def delete_all_objects(class_name=TEST_CLASS_NAME):
             break
         parse.Object.delete_all(r, ignore_acl=True)
 
-def save_object(class_name=TEST_CLASS_NAME, key=None, value=None):
+def create_object(class_name=TEST_CLASS_NAME, key=None, value=None):
     obj = parse.Object(class_name)
     if key is not None and value is not None:
         obj[key] = value
+    return obj
+
+def save_object(class_name=TEST_CLASS_NAME, key=None, value=None):
+    obj = create_object(class_name=class_name, key=key, value=value)
     obj.save()
     return obj
+
+def assert_is_object(test_case, obj):
+    test_case.assertIsNotNone(obj.object_id)
+    test_case.assertIsNotNone(obj.created_at)
 
 def wait(r, timeout=30):
     end_time = time.time() + timeout
@@ -47,8 +55,7 @@ class ParseObjectTestCase(unittest.TestCase):
 
     def test_save(self):
         obj = save_object()
-        self.assertIsNotNone(obj.object_id)
-        self.assertIsNotNone(obj.created_at)
+        assert_is_object(self, obj)
 
     def test_save_in_background(self):
         r = {'result': None}
@@ -58,17 +65,13 @@ class ParseObjectTestCase(unittest.TestCase):
         obj = parse.Object(TEST_CLASS_NAME)
         obj.save_in_background(callback=callback).wait()
         wait(r)
-
-        self.assertIsNotNone(obj.object_id)
-        self.assertIsNotNone(obj.created_at)
+        assert_is_object(self, obj)
 
     def test_refresh(self):
         object_id = save_object().object_id
         obj = parse.Object(TEST_CLASS_NAME, object_id)
         obj.refresh()
-
-        self.assertIsNotNone(obj.object_id)
-        self.assertIsNotNone(obj.created_at)
+        assert_is_object(obj)
 
     def test_refresh_in_background(self):
         object_id = save_object().object_id
@@ -80,9 +83,7 @@ class ParseObjectTestCase(unittest.TestCase):
         obj = parse.Object(TEST_CLASS_NAME, object_id)
         obj.refresh_in_background(callback=callback).wait()
         wait(r)
-
-        self.assertIsNotNone(obj.object_id)
-        self.assertIsNotNone(obj.created_at)
+        assert_is_object(self, obj)
 
     def test_delete(self):
         obj = save_object()
@@ -159,6 +160,12 @@ class ParseObjectTestCase(unittest.TestCase):
         obj.refresh()
         self.assertItemsEqual(obj['array'], array)
 
+    def test_save_all(self):
+        objs = [create_object(), create_object()]
+        parse.Object.save_all(objs)
+
+        for obj in objs:
+            assert_is_object(obj)
 
 if __name__ == '__main__':
     unittest.main()
