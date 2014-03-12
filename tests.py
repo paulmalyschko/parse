@@ -165,7 +165,7 @@ class ParseObjectTestCase(unittest.TestCase):
         parse.Object.save_all(objs)
 
         for obj in objs:
-            assert_is_object(obj)
+            assert_is_object(self, obj)
 
 if __name__ == '__main__':
     unittest.main()
