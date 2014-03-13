@@ -423,25 +423,25 @@ class Object(dict):
 
         return (url, {'headers': headers, 'data': data, 'callback': callback})
 
-    @staticmethod
-    def refresh_all(objs, **kwargs):
-        url, kwargs = Object.build_batch_refresh_args(objs=objs, **kwargs)
-        return Object.handle_batch_refresh_result(post(url, **kwargs),
-            objs=objs)
+    # @staticmethod
+    # def refresh_all(objs, **kwargs):
+    #     url, kwargs = Object.build_batch_refresh_args(objs=objs, **kwargs)
+    #     return Object.handle_batch_refresh_result(post(url, **kwargs),
+    #         objs=objs)
     
-    @staticmethod
-    def refresh_all_in_background(objs, **kwargs):
-        url, kwargs = Object.build_batch_refresh_args(objs=objs,
-            **kwargs)
-        return post(url, **kwargs)
+    # @staticmethod
+    # def refresh_all_in_background(objs, **kwargs):
+    #     url, kwargs = Object.build_batch_refresh_args(objs=objs,
+    #         **kwargs)
+    #     return post(url, **kwargs)
     
-    @staticmethod
-    def fetch_all(objs, **kwargs):
-        return self.refresh_all(objs, **kwargs)
+    # @staticmethod
+    # def fetch_all(objs, **kwargs):
+    #     return self.refresh_all(objs, **kwargs)
     
-    @staticmethod
-    def fetch_all_in_background(objs, **kwargs):
-        return self.refresh_all_in_background(objs, **kwargs)
+    # @staticmethod
+    # def fetch_all_in_background(objs, **kwargs):
+    #     return self.refresh_all_in_background(objs, **kwargs)
 
     def build_batch_delete_data(self):
         return {
