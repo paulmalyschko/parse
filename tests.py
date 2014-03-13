@@ -179,6 +179,19 @@ class ParseObjectTestCase(unittest.TestCase):
     #     for obj in objs:
     #         assert_is_object(self, obj)
 
+    def test_delete_all(self):
+        objs = [create_object(), create_object()]
+        parse.Object.save_all(objs)
+        object_ids = [obj.object_id for obj in objs]
+        parse.Object.delete_all(objs)
+
+        objs = [parse.Object(TEST_CLASS_NAME, object_id) for object_id in
+            object_ids]
+
+        for obj in objs:
+            with self.assertRaises(parse.ParseException):
+                obj.refresh()
+
 
 if __name__ == '__main__':
     unittest.main()
