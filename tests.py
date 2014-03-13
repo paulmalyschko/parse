@@ -172,8 +172,7 @@ class ParseObjectTestCase(unittest.TestCase):
         parse.Object.save_all(objs)
         object_ids = [obj.object_id for obj in objs]
 
-        objs = [parse.Object(TEST_CLASS_NAME, object_id) for object_id in
-            object_ids]
+        objs = [parse.Object(TEST_CLASS_NAME, object_id) for object_id in object_ids]
         parse.Object.refresh_all(objs)
 
         for obj in objs:
