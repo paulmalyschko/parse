@@ -458,7 +458,8 @@ class Object(dict):
             if 'success' in result:
                 obj.clean()
                 for key in ('objectId', 'createdAt', 'updatedAt'):
-                    super(Object, obj).__delitem__(key)
+                    if key in obj:
+                        super(Object, obj).__delitem__(key)
             elif 'error' in result:
                 errors.append(result['error'])
             else:
