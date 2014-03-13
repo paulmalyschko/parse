@@ -167,16 +167,17 @@ class ParseObjectTestCase(unittest.TestCase):
         for obj in objs:
             assert_is_object(self, obj)
 
-    def test_refresh_all(self):
-        objs = [create_object(), create_object()]
-        parse.Object.save_all(objs)
-        object_ids = [obj.object_id for obj in objs]
+    # def test_refresh_all(self):
+    #     objs = [create_object(), create_object()]
+    #     parse.Object.save_all(objs)
+    #     object_ids = [obj.object_id for obj in objs]
 
-        objs = [parse.Object(TEST_CLASS_NAME, object_id) for object_id in object_ids]
-        parse.Object.refresh_all(objs)
+    #     objs = [parse.Object(TEST_CLASS_NAME, object_id) for object_id in
+    #         object_ids]
+    #     parse.Object.refresh_all(objs)
 
-        for obj in objs:
-            assert_is_object(self, obj)
+    #     for obj in objs:
+    #         assert_is_object(self, obj)
 
 
 if __name__ == '__main__':
