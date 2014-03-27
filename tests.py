@@ -10,6 +10,12 @@ TEST_CLASS_NAME = 'TestObject'
 class ParseTestTimeout(Exception):
     pass
 
+def set_application():
+    app_id = os.environ['APPLICATION_ID']
+    rest_api_key = os.environ['REST_API_KEY']
+    master_key = os.environ['MASTER_KEY']
+    parse.set_application('test-parse', app_id, rest_api_key, master_key)
+
 def delete_all_objects(class_name=TEST_CLASS_NAME):
     while True:
         q = parse.Query(class_name)
