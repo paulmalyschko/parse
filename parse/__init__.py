@@ -15,11 +15,13 @@ __licence__ = 'BSD'
 __copyright__ = 'Copyright (c) 2013-2014 Paul Malyschko'
 __all__ = ['set_application', 'Object', 'User', 'Query', 'Relation',
     'ACL', 'Role', 'File', 'Analytics', 'Push', 'Installation', 'Cloud',
-    'GeoPoint', 'ParseException', 'DATETIME_MAX', 'DATETIME_FORMAT']
+    'GeoPoint', 'ParseException', 'DATETIME_MAX', 'DATETIME_FORMAT',
+    'CLASS_TYPE_USER', 'CLASS_TYPE_ROLE', 'CLASS_TYPE_INSTALLATION']
 
 
 from . import constants
-from .constants import DATETIME_MAX, DATETIME_FORMAT
+from .constants import (DATETIME_MAX, DATETIME_FORMAT, CLASS_TYPE_USER,
+    CLASS_TYPE_ROLE, CLASS_TYPE_INSTALLATION)
 from .models import (Object, User, Query, Relation, ACL, Role, File, Analytics,
     Push, Installation, Cloud, GeoPoint)
 from .exceptions import ParseException
@@ -32,7 +34,7 @@ def set_application(name, app_id=None, rest_api_key=None, master_key=None):
 
     kwargs = {
         'app_id': app_id,
-        'rest_api_key': rest_api_key, 
+        'rest_api_key': rest_api_key,
         'master_key': master_key
     }
 
