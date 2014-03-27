@@ -61,7 +61,7 @@ class ParseObjectTestCase(unittest.TestCase):
         r = {'result': None}
         def callback(result, error):
             r['result'] = result if not error else False
-        
+
         obj = parse.Object(TEST_CLASS_NAME)
         obj.save_in_background(callback=callback).wait()
         wait(r)
@@ -191,6 +191,13 @@ class ParseObjectTestCase(unittest.TestCase):
         for obj in objs:
             with self.assertRaises(parse.ParseException):
                 obj.refresh()
+
+    def test_object_has_one_geopoint(self):
+        obj = parse.Object(TEST_CLASS_NAME)
+        obj['point1'] = parse.GeoPoint(0, 0)
+
+        with self.assertRaises(ValueError):
+            obj['point2'] = parse.GeoPoint(0, 0)
 
 
 if __name__ == '__main__':
