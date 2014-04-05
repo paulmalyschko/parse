@@ -206,5 +206,38 @@ class ParseObjectTestCase(unittest.TestCase):
             obj['point2'] = parse.GeoPoint(0, 0)
 
 
+class ParseUserTestCase(unittest.TestCase):
+    def setUp(self):
+        app_id = os.environ['APPLICATION_ID']
+        rest_api_key = os.environ['REST_API_KEY']
+        master_key = os.environ['MASTER_KEY']
+        parse.set_application('test-parse', app_id, rest_api_key, master_key)
+
+    def tearDown(self):
+        delete_all_objects(parse.CLASS_TYPE_USER)
+    
+    def test_sign_up(self):
+        pass
+    
+    def test_sign_up_in_background(self):
+        pass
+    
+    def test_login(self):
+        pass
+    
+    def test_login_in_background(self):
+        pass
+    
+    def test_request_password_reset(self):
+        pass
+    
+    def test_request_password_reset_in_background(self):
+        pass
+    
+    def test_logout(self):
+        pass
+
+    
+
 if __name__ == '__main__':
     unittest.main()
