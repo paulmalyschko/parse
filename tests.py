@@ -217,7 +217,9 @@ class ParseUserTestCase(unittest.TestCase):
         delete_all_objects(parse.CLASS_TYPE_USER)
     
     def test_sign_up(self):
-        pass
+        user = parse.User('test_user', 'test_password')
+        user.sign_up()
+        assert_is_object(self, user)
     
     def test_sign_up_in_background(self):
         pass
@@ -236,7 +238,6 @@ class ParseUserTestCase(unittest.TestCase):
     
     def test_logout(self):
         pass
-
     
 
 if __name__ == '__main__':
