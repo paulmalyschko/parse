@@ -500,11 +500,12 @@ class Object(dict):
 
 class User(Object):
     def __init__(self, *args, **kwargs):
-        if len(args) != 2:
+        try:
+            kwargs['username'] = args[0]
+            kwargs['password'] = args[1]
+        except KeyError:
             raise ValueError("User requires username and password")
-        
-        kwargs['username'] = args[0]
-        kwargs['password'] = args[1]
+
         super(User, self).__init__('_User', **kwargs)
 
     @property
@@ -544,6 +545,7 @@ class User(Object):
         if object_id and self.object_id is not None:
             paths.append(self.object_id)
 
+        print '/'.join(paths)
         return '/'.join(paths)
 
     @staticmethod
