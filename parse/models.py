@@ -11,7 +11,7 @@ from .constants import (DATETIME_MAX, DATETIME_FORMAT, API_BASE_URL,
     API_VERSION, API_CLASSES_PATH, API_BATCH_PATH, API_USERS_PATH,
     API_LOGIN_PATH, API_PASSWORD_RESET_PATH, API_ROLES_PATH,
     API_FILES_PATH, API_EVENTS_PATH, API_PUSH_PATH,
-    API_INSTALLATIONS_PATH, API_FUNCTIONS_PATH, CLASS_TYPES, 
+    API_INSTALLATIONS_PATH, API_FUNCTIONS_PATH, CLASS_TYPES,
     CLASS_PATHS, DEVICE_TYPE_IOS, DEVICE_TYPE_ANDROID,
     DEVICE_TYPE_WINRT, DEVICE_TYPE_WINPHONE, DEVICE_TYPE_DOTNET,
     DEVICE_TYPES, QUERY_OPS, QUERY_DEFAULT_LIMIT, QUERY_MIN_LIMIT,
@@ -19,7 +19,7 @@ from .constants import (DATETIME_MAX, DATETIME_FORMAT, API_BASE_URL,
     ACL_OPS, ANALYTICS_EVENTS, ANALYTICS_DIMENSION_LIMIT, PUSH_IOS_KEYS,
     PUSH_ANDROID_KEYS, RESERVED_KEYS)
 from .exceptions import ParseException
-from .utils import (build_headers, request, get, post, put, delete, 
+from .utils import (build_headers, request, get, post, put, delete,
     build_boolean_callback, build_integer_callback, build_object_callback,
     build_list_callback, build_bytes_callback)
 
@@ -30,7 +30,7 @@ class Object(dict):
         self._updated_at = False
         self.has_geopoint = False
         self.dirty_keys = []
-        
+
         if len(args) == 1:
             super(Object, self).__setitem__('__type', 'Object')
             super(Object, self).__setitem__('className', args[0])
@@ -38,33 +38,33 @@ class Object(dict):
         elif len(args) == 2:
             if len(kwargs) > 0:
                 raise ValueError("Pointer does not take keyword args")
-            
+
             super(Object, self).__setitem__('__type', 'Pointer')
             super(Object, self).__setitem__('className', args[0])
             super(Object, self).__setitem__('objectId', args[1])
         else:
             msg = "Classname or classname and object id required"
             raise ValueError(msg)
-        
+
         super(Object, self).update(**kwargs)
-        
+
         for key in [k for k, v in self.items() if isinstance(v, Relation)]:
             self[key].instance = self
             self[key].key = key
-    
+
     def __repr__(self):
         return json.dump(self)
-    
+
     def __setitem__(self, key, value):
         if self.is_reserved(key):
             raise KeyError("Cannot set reserved key")
-        
+
         if key == 'createdAt':
             self._created_at = False
-        
+
         if key == 'updatedAt':
             self._updated_at = False
-        
+
         # set parent and key for a relation so it can append/remove
         if isinstance(value, Relation):
             value.instance = self
@@ -83,52 +83,52 @@ class Object(dict):
 
         super(Object, self).__setitem__(unicode(key), value)
         self.dirty(key)
-    
+
     def __delitem__(self, key):
         if self.is_reserved(key):
             raise KeyError("Cannot delete reserved key")
-        
+
         if key == 'createdAt':
             self._created_at = False
 
         if key == 'updatedAt':
             self._updated_at = False
-        
+
         if isinstance(self[key], Relation):
             self[key].instance = None
             self[key].key = None
 
         if isinstance(self[key], GeoPoint):
             self.has_geopoint = False
-        
+
         super(Object, self).__delitem__(unicode(key))
         self.dirty(key)
-    
+
     def update(self, *args, **kwargs):
         if args and kwargs:
             msg = "Should be either a dictionary or keywords"
             raise ValueError(msg)
-        
+
         if len(args) > 0:
             raise ValueError("Should only be a single dictionary")
-        
+
         try:
             for key, value in args[0].items():
                 self.__setitem__(key, value)
         except KeyError:
             for key, value in kwargs.items():
                 self.__setitem__(key, value)
-    
+
     def is_reserved(self, key):
         return key in RESERVED_KEYS or key[0] == '_'
-    
+
     def is_dirty(self, key):
         return key in self.dirty_keys and not self.is_reserved(key)
-    
+
     def dirty(self, key):
         if not self.is_dirty(key):
             self.dirty_keys.append(key)
-    
+
     def clean(self, key=None):
         if key is not None:
             self.dirty_keys.remove(key)
@@ -138,7 +138,7 @@ class Object(dict):
     @property
     def object_id(self):
         return self['objectId'] if 'objectId' in self else None
-    
+
     @property
     def created_at(self):
         if self._created_at is False:
@@ -147,9 +147,9 @@ class Object(dict):
                     self['createdAt'], DATETIME_FORMAT)
             except KeyError:
                 self._created_at = None
-        
+
         return self._created_at
-    
+
     @property
     def updated_at(self):
         if self._updated_at is False:
@@ -158,47 +158,47 @@ class Object(dict):
                     self['updatedAt'], DATETIME_FORMAT)
             except KeyError:
                 self._updated_at = None
-        
+
         return self._updated_at
-    
+
     @property
     def class_name(self):
         return self['className'] if 'className' in self else None
-    
+
     @property
     def ACL(self):
         return self['ACL'] if 'ACL' in self else None
-    
+
     @ACL.setter
     def ACL(self, acl):
         self['ACL'] = acl
-    
+
     def is_data_available(self):
         return self['__type'] == 'Pointer'
-    
+
     def object_without_data(self):
         if self.object_id is None:
             return
-        
+
         return Object(self.class_name, self.object_id)
-    
+
     def build_url(self, object_id=False):
         paths = [API_BASE_URL, API_VERSION, API_CLASSES_PATH,
             self.class_name]
-        
+
         if object_id and self.object_id is not None:
             paths.append(self.object_id)
-        
+
         return '/'.join(paths)
-    
+
     def build_relative_url(self, object_id=False):
         return self.build_url(object_id).replace(API_BASE_URL, '', 1)
-    
+
     def handle_save_result(self, response, **kwargs):
         self.clean()
         super(Object, self).update(json.load(response.text))
         return True
-    
+
     def build_save_args(self, **kwargs):
         ignore_acl = kwargs.pop('ignore_acl', False)
         callback = kwargs.pop('callback', None)
@@ -223,16 +223,16 @@ class Object(dict):
     def save(self, **kwargs):
         method, url, kwargs = self.build_save_args(**kwargs)
         return self.handle_save_result(request(method, url, **kwargs))
-    
+
     def save_in_background(self, **kwargs):
         method, url, kwargs = self.build_save_args(**kwargs)
         return request(method, url, **kwargs)
-    
+
     def handle_refresh_result(self, response, **kwargs):
         self.clean()
         super(Object, self).update(json.load(response.text, self.class_name))
         return self
-    
+
     def build_refresh_args(self, **kwargs):
         ignore_acl = kwargs.pop('ignore_acl', False)
         callback = kwargs.pop('callback', None)
@@ -243,30 +243,30 @@ class Object(dict):
         if callback is not None:
             callback = build_object_callback(self.handle_refresh_result,
                 callback=callback, **kwargs)
-        
+
         return (url, {'headers': headers, 'callback': callback})
 
     def refresh(self, **kwargs):
         url, kwargs = self.build_refresh_args(**kwargs)
         self.handle_refresh_result(get(url, **kwargs))
-    
+
     def refresh_in_background(self, **kwargs):
         url, kwargs = self.build_refresh_args(**kwargs)
         return get(url, **kwargs)
-    
+
     def fetch(self, **kwargs):
         self.refresh(**kwargs)
-    
+
     def fetch_in_background(self, **kwargs):
         return self.refresh_in_background(**kwargs)
-    
+
     def handle_delete_result(self, response, **kwargs):
         self.clean()
         for key in ('objectId', 'createdAt', 'updatedAt'):
             if key in self:
                 super(Object, self).__delitem__(key)
         return True
-    
+
     def build_delete_args(self, **kwargs):
         ignore_acl = kwargs.pop('ignore_acl', False)
         callback = kwargs.pop('callback', None)
@@ -277,13 +277,13 @@ class Object(dict):
         if callback is not None:
             callback = build_boolean_callback(self.handle_delete_result,
                 callback=callback, **kwargs)
-        
+
         return (url, {'headers': headers, 'callback': callback})
 
     def delete(self, **kwargs):
         url, kwargs = self.build_delete_args(**kwargs)
         return self.handle_delete_result(delete(url, **kwargs))
-    
+
     def delete_in_background(self, **kwargs):
         url, kwargs = self.build_delete_args(**kwargs)
         return delete(url, **kwargs)
@@ -296,7 +296,7 @@ class Object(dict):
         put(url, headers=headers, data=data)
         self[key] += amount
         self.clean(key=key)
-    
+
     def add_objects_to_array(self, key, objs, **kwargs):
         ignore_acl = kwargs.pop('ignore_acl', False)
         url = self.build_url(True)
@@ -305,7 +305,7 @@ class Object(dict):
         put(url, headers=headers, data=data)
         self[key] = self[key] + objs
         self.clean(key=key)
-    
+
     def add_unique_objects_to_array(self, key, objs, **kwargs):
         ignore_acl = kwargs.pop('ignore_acl', False)
         url = self.build_url(True)
@@ -314,7 +314,7 @@ class Object(dict):
         put(url, headers=headers, data=data)
         self[key] = list({obj for obj in (self[key] + objs)})
         self.clean(key=key)
-                
+
     def remove_objects_from_array(self, key, objs, **kwargs):
         ignore_acl = kwargs.pop('ignore_acl', False)
         url = self.build_url(True)
@@ -323,12 +323,12 @@ class Object(dict):
         put(url, headers=headers, data=data)
         self[key] = [obj for obj in self[key] if obj not in objs]
         self.clean(key=key)
-    
+
     @staticmethod
     def build_batch_url():
         paths = [API_BASE_URL, API_VERSION, API_BATCH_PATH]
         return '/'.join(paths)
-    
+
     def build_batch_save_data(self):
         saved = self.object_id is not None
         return {
@@ -336,7 +336,7 @@ class Object(dict):
             'path': self.build_relative_url(saved),
             'body': {k: self[k] for k in self.dirty_keys}
         }
-    
+
     @staticmethod
     def handle_batch_save_result(response, **kwargs):
         objs = kwargs.pop('objs', None)
@@ -376,12 +376,12 @@ class Object(dict):
         url, kwargs = Object.build_batch_save_args(objs=objs, **kwargs)
         return Object.handle_batch_save_result(post(url, **kwargs),
             objs=objs)
-    
+
     @staticmethod
     def save_all_in_background(objs, **kwargs):
         url, kwargs = Object.build_batch_save_args(objs=objs, **kwargs)
         return post(url, **kwargs)
-    
+
     def build_batch_refresh_data(self):
         return {
             'method': 'GET',
@@ -428,17 +428,17 @@ class Object(dict):
     #     url, kwargs = Object.build_batch_refresh_args(objs=objs, **kwargs)
     #     return Object.handle_batch_refresh_result(post(url, **kwargs),
     #         objs=objs)
-    
+
     # @staticmethod
     # def refresh_all_in_background(objs, **kwargs):
     #     url, kwargs = Object.build_batch_refresh_args(objs=objs,
     #         **kwargs)
     #     return post(url, **kwargs)
-    
+
     # @staticmethod
     # def fetch_all(objs, **kwargs):
     #     return self.refresh_all(objs, **kwargs)
-    
+
     # @staticmethod
     # def fetch_all_in_background(objs, **kwargs):
     #     return self.refresh_all_in_background(objs, **kwargs)
@@ -478,7 +478,7 @@ class Object(dict):
         url = Object.build_batch_url()
         headers = build_headers(master_key=ignore_acl)
         data = json.dump({'requests': requests})
-        
+
         if callback is not None:
             callback = build_boolean_callback(
                 Object.handle_batch_delete_result, objs=objs,
@@ -491,7 +491,7 @@ class Object(dict):
         url, kwargs = Object.build_batch_delete_args(objs=objs, **kwargs)
         return Object.handle_batch_delete_result(post(url, **kwargs),
             objs=objs)
-    
+
     @staticmethod
     def delete_all_in_background(objs, **kwargs):
         url, kwargs = Object.build_batch_delete_args(objs=objs,
@@ -499,8 +499,13 @@ class Object(dict):
         return post(url, **kwargs)
 
 class User(Object):
-    def __init__(self, **kwargs):
-        super(User, self).__init__('_User', *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        if len(args) != 2:
+            raise ValueError("User requires username and password")
+        
+        kwargs['username'] = args[0]
+        kwargs['password'] = args[1]
+        super(User, self).__init__('_User', **kwargs)
 
     @property
     def username(self):
@@ -540,22 +545,22 @@ class User(Object):
             paths.append(self.object_id)
 
         return '/'.join(paths)
-    
+
     @staticmethod
     def build_login_url(self):
         paths = [API_BASE_URL, API_VERSION, API_LOGIN_PATH]
         return '/'.join(paths)
-    
+
     def build_password_reset_url(self):
         paths = [API_BASE_URL, API_VERSION, API_PASSWORD_RESET_PATH]
         return '/'.join(paths)
-    
+
     def sign_up(self):
         return self.save()
 
     def sign_up_in_background(self, **kwargs):
         return self.save_in_background(**kwargs)
-    
+
     @staticmethod
     def build_login_args(user, username, password, **kwargs):
         callback = kwargs.pop('callback', None)
@@ -593,7 +598,7 @@ class User(Object):
 
     def log_out(self):
         del self['sessionToken']
-    
+
     @staticmethod
     def handle_request_password_reset(response, **kwargs):
         return len(json.load(response.text)) == 0
@@ -640,7 +645,7 @@ class Query(object):
     @property
     def class_name(self):
         return self._class_name
-    
+
     @property
     def limit(self):
         return self._limit
@@ -671,13 +676,13 @@ class Query(object):
 
     def build_url(self, object_id=None):
         paths = [API_BASE_URL, API_VERSION]
-        
+
         try:
             paths.append(CLASS_PATHS[self.class_name])
         except KeyError:
             paths.append(API_CLASSES_PATH)
             paths.append(self.class_name)
-        
+
         if object_id is not None:
             paths.append(object_id)
 
@@ -695,7 +700,7 @@ class Query(object):
 
         self.data['where'][key][op] = value
         return self
-    
+
     def set_where_op(self, op, value):
         if op not in QUERY_OPS:
             raise ValueError('%s is not a valid operation' % (op))
@@ -705,11 +710,11 @@ class Query(object):
 
         self.data['where'][op] = value
         return self
-    
+
     def eq(self, key, value):
         if 'where' not in self.data:
             self.data['where'] = {}
-        
+
         self.data['where'][key] = value
         return self
 
@@ -751,7 +756,7 @@ class Query(object):
         return self.set_where_op_for_key(key, '$exists', True)
 
     def not_exist(self, key):
-        return self.set_where_op_for_key(key, '$exists', False)        
+        return self.set_where_op_for_key(key, '$exists', False)
 
     def select(self, key, value):
         return self
@@ -785,15 +790,15 @@ class Query(object):
             'object': obj.object_without_data(),
             'key': key
         }
-        
+
         return self.set_where_op('$relatedTo', value)
-    
+
     @staticmethod
     def or_query_with_subqueries(*queries):
         value = [query.data['where'] for query in queries]
         query = Query().set_where_op('$or', value)
         return query
-    
+
     def build_get_args(self, object_id, **kwargs):
         ignore_acl = kwargs.pop('ignore_acl', False)
         callback = kwargs.pop('callback', None)
@@ -802,7 +807,7 @@ class Query(object):
         headers = build_headers(master_key=ignore_acl)
 
         if callback is not None:
-            callback = build_object_callback(self.handle_get_result, 
+            callback = build_object_callback(self.handle_get_result,
                 callback=callback, **kwargs)
 
         return (url, {'headers': headers, 'callback': callback})
@@ -813,7 +818,7 @@ class Query(object):
     def get(self, object_id, **kwargs):
         url, kwargs = self.build_get_args(object_id, **kwargs)
         return self.handle_get_result(get(url, **kwargs))
-    
+
     def get_in_background(self, object_id, **kwargs):
         url, kwargs = self.build_get_args(object_id, **kwargs)
         return get(url, **kwargs)
@@ -893,7 +898,7 @@ class Relation(object):
         else:
             return json.dump({'__type': 'Relation',
                 'className': self.class_name})
-    
+
     def is_role_relation(self):
         if not isinstance(self.instance, Role):
             return False
@@ -911,21 +916,21 @@ class Relation(object):
         url = self.instance.build_url(object_id=True)
         headers = build_headers()
         data = json.dump({self.key: {'__op': op, 'objects': objs}})
-        
+
         try:
             r = put(url, headers=headers, data=str(self))
         except ParseException:
             pass
-    
+
     def query(self):
         return Query(self.class_name).related_to(self.instance, self.key)
-    
+
     def get(self):
         if self.instance is None or self.key is None:
             raise ValueError("Relation needs to be set inside an object")
-        
+
         return self.query().find()
-    
+
     def append(self, *objs):
         objs = [obj.object_without_data() for obj in objs]
         if self.is_role_relation():
@@ -994,29 +999,29 @@ class Role(Object):
         self.name = name
         self.ACL = acl
         super(Role, self).update(**kwargs)
-        
+
         if self.users is None:
             self.users = Relation(CLASS_TYPE_USER)
-        
+
         if self.roles is None:
             self.roles = Relation(CLASS_TYPE_ROLE)
-    
+
     @property
     def name(self):
         return self['name'] if 'name' in self else None
-    
+
     @name.setter
     def name(self, name):
         self['name'] = name
-    
+
     @property
     def users(self):
         return self['users'] if 'users' in self else None
-    
+
     @property
     def roles(self):
         return self['roles'] if 'roles' in self else None
-    
+
     def build_url(self, object_id=False):
         paths = [API_BASE_URL, API_VERSION, API_ROLES_PATH]
 
@@ -1120,7 +1125,7 @@ class File(object):
     def get_data_in_background(self, **kwargs):
         if self.is_dirty() or self.is_data_available():
             raise ValueError("Hasn't been saved")
-        
+
         url, kwargs = self.build_get_data_args(**kwargs)
         return get(url, **kwargs)
 
@@ -1154,7 +1159,7 @@ class Analytics(object):
     def build_url(event_name):
         paths = [API_BASE_URL, API_VERSION, API_EVENTS_PATH, event_name]
         return '/'.join(paths)
-    
+
     @staticmethod
     def track_app_opened(at=None):
         url = Analytics.build_url('AppOpened')
@@ -1197,11 +1202,11 @@ class Push(object):
         for device_type in device_types:
             if device_type not in globals.DEVICE_TYPES:
                 raise ValueError("Invalid device type '%s'" % (device_type))
-        
+
         if expiration_time is not None and expiration_interval is not None:
             msg = "Can only set an expiration time or interval"
             raise ValueError(msg)
-        
+
         self.channels = channels
         if message is not None:
             self.data = {'alert': message}
@@ -1209,77 +1214,77 @@ class Push(object):
         self._device_types = device_types
         self._expiration_time = None
         self._expiration_interval = None
-        
+
         if expiration_time is not None:
             self.expiration_time = expiration_time
-        
+
         if expiration_interval is not None:
             self.expiration_interval = expiration_interval
-        
+
         self._query = None
         self.query = query
-    
+
     @property
     def device_types(self):
         return self._device_types
-    
+
     def add_device_type(self, device_type):
         if device_type not in DEVICE_TYPES:
             raise ValueError("Invalid device type '%s'" % (device_type))
-        
+
         if device_type not in self._device_types:
             self._device_types.append(device_type)
             self._device_types.sort()
-    
+
     def remove_device_type(self, device_type):
         if device_type not in DEVICE_TYPES:
             raise ValueError("Invalid device type '%s'" % (device_type))
-        
+
         try:
             self._device_types.remove(device_type)
             self._device_types.sort()
         except KeyError:
             raise ValueError("Device type not set")
-        
+
     @property
     def expiration_time(self):
         return self._expiration_time
-    
+
     @expiration_time.setter
     def expiration_time(self, time):
         self._expiration_time = time
         self._expiration_interval = None
-    
+
     @property
     def expiration_interval(self):
         return self._expiration_interval
-    
+
     @expiration_interval.setter
     def expiration_interval(self, interval):
         self._expiration_interval = interval
         self._expiration_time = None
-    
+
     @property
     def query(self):
         return self._query
-    
+
     @query.setter
     def query(self, query):
         self._query = query
-    
+
     def build_url(self):
         paths = [API_BASE_URL, API_VERSION, API_PUSH_PATH]
         return '/'.join(paths)
-    
+
     def build_send_data(self):
         data = {
             'channels': self.channels,
             'data': self.data
         }
-        
+
         if self.query is not None:
             data['where'] = self.query.where
-    
+
     def handle_send_result(self, response, **kwargs):
         return True
 
@@ -1299,7 +1304,7 @@ class Push(object):
     def send(self, **kwargs):
         url, kwargs = self.build_send_args(**kwargs)
         return self.handle_send_result(post(url, **kwargs))
-    
+
     def send_in_background(self, **kwargs):
         url, kwargs = self.build_send_args(**kwargs)
         return post(url, **kwargs)
@@ -1313,7 +1318,7 @@ class Installation(Object):
         badge = kwargs.pop('badge', None)
         timezone = kwargs.pop('timezone', None)
         channels = kwargs.pop('channels', None)
-        
+
         self['deviceType'] = device_type
         self['installationId'] = installation_id
         self.device_token = device_token
@@ -1321,64 +1326,64 @@ class Installation(Object):
         self['timezone'] = timezone
         self['channels'] = channels
         super(Installation, self).update(**kwargs)
-    
+
     @property
     def device_type(self):
         return self['deviceType'] if 'deviceType' in self else None
-    
+
     @property
     def installation_id(self):
         return self['installationId'] if 'installationId' in self else None
-    
+
     @property
     def device_token(self):
         if self.device_type != DEVICE_TYPE_IOS:
             return None
-        
+
         return self['deviceToken'] if 'deviceToken' in self else None
-    
+
     @device_token.setter
     def device_token(self, device_token):
         if self.device_type != DEVICE_TYPE_IOS:
             msg = "Cannot set the device token for non-iOS devices"
             raise ValueError(msg)
-        
+
         self['deviceToken'] = device_token
-    
+
     @property
     def badge(self):
         if self.device_type != DEVICE_TYPE_IOS:
             return None
-        
+
         return self['badge'] if 'badge' in self else None
-    
+
     @badge.setter
     def badge(self, badge):
         if self.device_type != DEVICE_TYPE_IOS:
             msg = "Cannot set the badge for non-iOS devices"
             raise ValueError(msg)
-        
+
         self['badge'] = badge
-    
+
     @property
     def timezone(self):
         return self['timezone'] if 'timezone' in self else None
-    
+
     @property
     def channels(self):
         return self['channels'] if 'channels' in self else None
-    
+
     def subscribe_channel(self, channel):
         if re.match('^[\w-_]+$', channel) is None:
             msg = 'Channel must contain alphanumeric, - or _ chars'
             raise ValueError(msg)
-        
+
         try:
             self['channels'].append(channel)
             self.dirty('channels')
         except KeyError:
             self['channels'] = [channel]
-    
+
     def unsubscribe_channel(self, channel):
         try:
             self['channels'].remove(channel)
@@ -1388,15 +1393,15 @@ class Installation(Object):
             raise ValueError(msg)
         except KeyError:
             pass
-    
+
     def build_url(self, object_id=False):
         paths = [API_BASE_URL, API_VERSION, API_INSTALLATIONS_PATH]
-        
+
         if object_id and self.object_id is not None:
             paths.append(self.object_id)
-        
+
         return '/'.join(paths)
-    
+
     def query(self):
         query = Query(self.class_name)
         return query
@@ -1406,7 +1411,7 @@ class Cloud(object):
     def build_url(fn):
         paths = [API_BASE_URL, API_VERSION, API_FUNCTIONS_PATH, fn]
         return '/'.join(paths)
-    
+
     @staticmethod
     def build_function_args(fn, params=None, **kwargs):
         callback = kwargs.pop('callback', None)
